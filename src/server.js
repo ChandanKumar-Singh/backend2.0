@@ -14,18 +14,18 @@ async function startServer() {
   try {
     // Connect to MongoDB
     await database.connect();
-    logger.info('Database connected successfully');
+    // logger.info('Database connected successfully');
 
     // Connect to Redis
     await redisClient.connect();
-    logger.info('Redis connected successfully');
+    // logger.info('Redis connected successfully');
 
     // Initialize job queues
     await emailQueue.initialize();
-    logger.info('Email queue initialized');
+    // logger.info('Email queue initialized');
 
     await notificationWorker.initialize();
-    logger.info('Notification worker initialized');
+    // logger.info('Notification worker initialized');
 
     // Start server
     const server = app.listen(config.PORT, config.HOST, () => {
