@@ -12,7 +12,7 @@ export default class AuthService {
     try {
       // Find user by email and include password
       const user = await User.findByEmail(email).select('+password');
-      
+
       if (!user) {
         throw new AuthenticationError('Invalid email or password');
       }
@@ -95,7 +95,7 @@ export default class AuthService {
   async logout(userId, refreshToken) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -118,7 +118,7 @@ export default class AuthService {
   async generatePasswordResetToken(email) {
     try {
       const user = await User.findByEmail(email);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -161,10 +161,10 @@ export default class AuthService {
       user.password = newPassword;
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
-      
+
       // Clear all refresh tokens for security
       await user.clearRefreshTokens();
-      
+
       await user.save();
 
       logger.info('Password reset successful', { userId: user._id });

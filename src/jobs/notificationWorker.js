@@ -75,7 +75,7 @@ export class NotificationWorker {
       logger.info('Notification worker initialized successfully');
     } catch (error) {
       logger.error('Failed to initialize notification worker:', error);
-      throw error;
+      // throw error;
     }
   }
 

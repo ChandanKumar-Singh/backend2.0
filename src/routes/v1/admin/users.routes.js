@@ -1,5 +1,5 @@
 import express from 'express';
-import UserController from '../../modules/users/user.controller.js';
+import UserController from '../../../modules/users/user.controller.js';
 import { validate, validateObjectId, validatePagination, commonSchemas } from '../../../middlewares/validation.js';
 import { adminCache } from '../../../middlewares/cache.js';
 import { asyncHandler } from '../../../middlewares/error.js';

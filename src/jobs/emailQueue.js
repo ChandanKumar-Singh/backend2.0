@@ -86,7 +86,7 @@ export class EmailQueue {
       logger.info('Email queue initialized successfully');
     } catch (error) {
       logger.error('Failed to initialize email queue:', error);
-      throw error;
+      // throw error;
     }
   }
 

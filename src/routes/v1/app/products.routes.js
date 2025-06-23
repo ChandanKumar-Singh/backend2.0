@@ -1,5 +1,5 @@
 import express from 'express';
-import ProductController from '../../modules/products/product.controller.js';
+import ProductController from '../../../modules/products/product.controller.js';
 import { authenticate, optionalAuth } from '../../../middlewares/auth.js';
 import { validate, validateObjectId, validatePagination, commonSchemas } from '../../../middlewares/validation.js';
 import { publicCache, userCache } from '../../../middlewares/cache.js';

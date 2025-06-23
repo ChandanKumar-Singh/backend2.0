@@ -1,5 +1,5 @@
 import express from 'express';
-import AuthController from '../../modules/auth/auth.controller.js';
+import AuthController from '../../../modules/auth/auth.controller.js';
 import { authenticate, refreshAuth } from '../../../middlewares/auth.js';
 import { validate, commonSchemas } from '../../../middlewares/validation.js';
 import { asyncHandler } from '../../../middlewares/error.js';

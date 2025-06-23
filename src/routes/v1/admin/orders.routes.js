@@ -1,5 +1,5 @@
 import express from 'express';
-import OrderController from '../../modules/orders/order.controller.js';
+import OrderController from '../../../modules/orders/order.controller.js';
 import { validate, validateObjectId, validatePagination, commonSchemas } from '../../../middlewares/validation.js';
 import { adminCache } from '../../../middlewares/cache.js';
 import { asyncHandler } from '../../../middlewares/error.js';

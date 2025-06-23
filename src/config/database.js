@@ -16,8 +16,9 @@ class Database {
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,
         bufferCommands: false,
-        bufferMaxEntries: 0,
+        // bufferMaxEntries: 0,
       };
+      console.log(`Connecting to MongoDB at ${config.MONGODB_URI}...`);
 
       this.connection = await mongoose.connect(config.MONGODB_URI, options);
       

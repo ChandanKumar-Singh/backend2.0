@@ -43,7 +43,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5000
-      HOST: 0.0.0.0
+      HOST: 127.0.0.1
       MONGODB_URI: mongodb://admin:password@mongodb:27017/enterprise_backend?authSource=admin
       REDIS_URL: redis://:password@redis:6379
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
