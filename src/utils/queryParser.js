@@ -442,7 +442,7 @@ export class QueryConfig {
     q = '',
     query_data = [],
     page = 1,
-    limit = 5,
+    limit = 20,
     sortBy = 'createdAt',
     sortOrder = 'desc',
     regexFields = [],
