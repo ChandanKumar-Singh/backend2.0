@@ -83,6 +83,7 @@ class RedisClient {
   async get(key) {
     try {
       const value = await this.client.get(key);
+      console.log(`Redis get: ${key}`, value);
       return value ? JSON.parse(value) : null;
     } catch (error) {
       logger.error('Redis get error:', error);
@@ -93,6 +94,7 @@ class RedisClient {
   async set(key, value, ttl = 3600) {
     try {
       const serialized = JSON.stringify(value);
+      console.log(`Redis set: ${key}`, serialized);
       if (ttl) {
         await this.client.setex(key, ttl, serialized);
       } else {
@@ -108,6 +110,7 @@ class RedisClient {
   async del(key) {
     try {
       await this.client.del(key);
+      console.log(`Redis del: ${key}`);
       return true;
     } catch (error) {
       logger.error('Redis del error:', error);
@@ -117,6 +120,7 @@ class RedisClient {
 
   async exists(key) {
     try {
+      console.log(`Redis exists: ${key}`);
       return await this.client.exists(key);
     } catch (error) {
       logger.error('Redis exists error:', error);

@@ -12,13 +12,13 @@ import { setupSwagger } from '../swagger.config.js';
 const app = express();
 
 // Trust proxy for proper IP detection
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 /// test ip and protocol
-/* app.use((req, res, next) => {
+app.use((req, res, next) => {
   console.log('IP:', req.ip);
   console.log('Protocol:', req.protocol);
   next();
-}); */
+});
 
 
 // Request logging

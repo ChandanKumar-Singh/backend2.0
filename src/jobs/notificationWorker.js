@@ -220,7 +220,7 @@ export class NotificationWorker {
 
     // Notify all admin users
     const adminUsers = await this.notificationService.getAdminUsers();
-    
+
     for (const admin of adminUsers) {
       await this.notificationService.createNotification({
         userId: admin._id,
@@ -254,7 +254,7 @@ export class NotificationWorker {
 
     // Notify all active users
     const activeUsers = await this.notificationService.getActiveUsers();
-    
+
     for (const user of activeUsers) {
       await this.notificationService.createNotification({
         userId: user._id,
@@ -304,7 +304,7 @@ export class NotificationWorker {
       }));
 
       const bulkJobs = await this.queue.addBulk(jobs);
-      
+
       logger.info('Bulk notification jobs added to queue', {
         count: bulkJobs.length,
       });

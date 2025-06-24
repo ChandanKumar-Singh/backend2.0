@@ -9,7 +9,6 @@ const userController = new UserController();
 
 // Get all users with pagination and filtering
 router.get('/',
-  // validatePagination,
   adminCache(1800), // 30 minutes cache
   asyncHandler(userController.getUsers.bind(userController))
 );

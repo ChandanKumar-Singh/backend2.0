@@ -104,6 +104,7 @@ export const invalidateCache = async (pattern) => {
     if (keys.length > 0) {
       // Remove the prefix from keys before deleting
       const keysWithoutPrefix = keys.map(key => key.replace('app:', ''));
+      console.log(`Invalidating cache for pattern: ${pattern}`, { keys: keysWithoutPrefix });
       await redisClient.getClient().del(...keysWithoutPrefix);
       logger.info('Cache invalidated', { pattern, count: keys.length });
     }
