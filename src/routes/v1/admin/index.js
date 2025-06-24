@@ -8,7 +8,7 @@ import ordersRoutes from './orders.routes.js';
 const router = express.Router();
 
 // Apply authentication and admin role requirement to all admin routes
-router.use(authenticate);
+// router.use(authenticate);
 // router.use(requireAdmin);
 
 // Mount admin routes

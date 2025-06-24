@@ -9,7 +9,7 @@ const orderController = new OrderController();
 
 // Get all orders with pagination and filtering
 router.get('/',
-  validatePagination,
+  // validatePagination,
   adminCache(600), // 10 minutes cache
   asyncHandler(orderController.getAllOrders.bind(orderController))
 );

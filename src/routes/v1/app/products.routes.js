@@ -11,7 +11,7 @@ const productController = new ProductController();
 // Get all products (public endpoint with optional auth)
 router.get('/',
   optionalAuth,
-  validatePagination,
+  // validatePagination,
   publicCache(1800), // 30 minutes cache
   asyncHandler(productController.getProducts.bind(productController))
 );

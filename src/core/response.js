@@ -5,9 +5,9 @@ export class ApiResponse {
   constructor(success, message, data = null, meta = null) {
     this.success = success;
     this.message = message;
-    this.data = data;
-    this.meta = meta;
     this.timestamp = new Date().toISOString();
+    this.meta = meta;
+    this.data = data;
   }
 
   static success(message = 'Success', data = null, meta = null) {

@@ -3,6 +3,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
+  // general
+  TIME_ZONE_NAME: process.env.TIME_ZONE_NAME || 'UTC',
+
+
+
+
+
   // Server
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: process.env.PORT || 5000,

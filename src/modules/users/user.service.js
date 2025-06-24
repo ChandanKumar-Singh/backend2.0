@@ -1,29 +1,146 @@
 import User from './user.model.js';
 import { NotFoundError, ConflictError, ValidationError } from '../../core/error.js';
-import { createQueryParser } from '../../utils/queryParser.js';
+import { createQueryParser, QueryConfig, UniversalPipelineBuilder, UniversalQueryBuilder } from '../../utils/queryParser.js';
 import logger from '../../core/logger.js';
 import { invalidateCacheByTags } from '../../middlewares/cache.js';
 
 export default class UserService {
+
+  async fetchUsers({
+    session = null,
+    page = 1,
+    limit = 20,
+    sort = {},
+    project = {},
+    filters = [],
+  } = {}) {
+    try {
+
+      const builder = new UniversalQueryBuilder(User)
+        .setSession(session)
+        .match(filters)
+        .lookup({
+          from: 'addresses',
+          localField: 'address_id',
+          foreignField: '_id',
+          as: 'addressObj',
+        })
+        .unwind({ path: '$addressObj', preserveNullAndEmptyArrays: true })
+        .lookup({
+          from: 'companies',
+          localField: 'company_id',
+          foreignField: '_id',
+          as: 'companyObj',
+        })
+        .unwind({ path: '$companyObj', preserveNullAndEmptyArrays: true })
+        .lookup({
+          from: 'notificationpreferences',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'notificationPreferences',
+        })
+        .unwind({ path: '$notificationPreferences', preserveNullAndEmptyArrays: true })
+        .addFields({
+          fullName: {
+            $trim: {
+              input: { $concat: [{ $ifNull: ['$name', ''] }, ' ', { $ifNull: ['$lastName', ''] }] },
+            },
+          },
+          ageGroup: {
+            $switch: {
+              branches: [
+                { case: { $lt: ['$age', 18] }, then: 'Minor' },
+                { case: { $lt: ['$age', 40] }, then: 'Adult' },
+                { case: { $gte: ['$age', 40] }, then: 'Senior' },
+              ],
+              default: 'Unknown',
+            },
+          },
+          isActive: { $eq: ['$status', 'active'] },
+          // approvedOnText: DateUtils.aggregate('$approved_on'),
+          // createdAtText: DateUtils.aggregate('$createdAt'),
+          // updatedAtText: DateUtils.aggregate('$updatedAt'),
+          is_flagged: false,
+        })
+        .sortBy(sort)
+        .paginate(page, limit)
+        .project({
+          name: 1,
+          lastName: 1,
+          fullName: 1,
+          email: 1,
+          contact: 1,
+          role: 1,
+          type: 1,
+          image: 1,
+          age: 1,
+          ageGroup: 1,
+          gender: 1,
+          fcmToken: 1,
+          deviceId: 1,
+          address: {
+            street: '$addressObj.street',
+            city: '$addressObj.city',
+            state: '$addressObj.state',
+            zip: '$addressObj.zip',
+          },
+          company: {
+            name: '$companyObj.name',
+            code: '$companyObj.code',
+            industry: '$companyObj.industry',
+          },
+          notification_preferences: {
+            _id: '$notificationPreferences._id',
+            user: {
+              _id: '$_id',
+              email: '$email',
+              name: '$name',
+              role: '$role',
+              type: '$type',
+              status: '$status',
+              isActive: '$isActive',
+              image: '$image',
+              contact: '$contact',
+              country_code: '$country_code',
+            },
+            preferences: '$notificationPreferences.preferences',
+            deliveryChannels: '$notificationPreferences.deliveryChannels',
+          },
+          status: 1,
+          isActive: 1,
+          last_login: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          approvedOnText: 1,
+          createdAtText: 1,
+          updatedAtText: 1,
+          ...project, // Spread any additional project fields dynamically
+        });
+
+      const data = await builder.exec(true);
+      return data;
+    } catch (error) {
+      console.error('fetchUsers error:', error);
+      throw error;
+    }
+  }
+
+
+
   /**
    * Get paginated users with filtering and sorting
    */
-  async getUsers(query) {
+  async getUsers(query,{session = null} = {}) {
     try {
-      const queryParser = createQueryParser(query);
-      const result = await queryParser
-        .filter()
-        .sort()
-        .select()
-        .paginate()
-        .execute(User);
-
-      logger.info('Users retrieved', {
-        count: result.data.length,
-        total: result.pagination.total,
-        page: result.pagination.page,
+      query.query_data = [
+        // { name: 'status', value: 'ACTIVE', type: 'select' },
+        // { name: 'createdAt', value: '2026-01-01', type: 'date', operator: 'lte' },
+      ];
+      const qc = QueryConfig.build({
+        ...query,
+        allowedFields: [], regexFields: ['name', 'email']
       });
-
+      let result = await this.fetchUsers({ session, ...qc });
       return result;
     } catch (error) {
       logger.error('Failed to get users:', error);
@@ -37,7 +154,7 @@ export default class UserService {
   async getUserById(userId) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -63,7 +180,7 @@ export default class UserService {
   async getUserByEmail(email) {
     try {
       const user = await User.findByEmail(email);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -85,7 +202,7 @@ export default class UserService {
   async getUserByUsername(username) {
     try {
       const user = await User.findByUsername(username);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -151,7 +268,7 @@ export default class UserService {
   async updateUser(userId, updateData) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -201,7 +318,7 @@ export default class UserService {
   async updateUserProfile(userId, profileData) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -229,7 +346,7 @@ export default class UserService {
   async updateUserPreferences(userId, preferences) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -257,7 +374,7 @@ export default class UserService {
   async changePassword(userId, currentPassword, newPassword) {
     try {
       const user = await User.findById(userId).select('+password');
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -292,7 +409,7 @@ export default class UserService {
   async deactivateUser(userId) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -323,7 +440,7 @@ export default class UserService {
   async reactivateUser(userId) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }
@@ -351,7 +468,7 @@ export default class UserService {
   async deleteUser(userId) {
     try {
       const user = await User.findById(userId);
-      
+
       if (!user) {
         throw new NotFoundError('User not found');
       }

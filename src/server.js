@@ -21,10 +21,10 @@ async function startServer() {
     // logger.info('Redis connected successfully');
 
     // Initialize job queues
-    await emailQueue.initialize();
+    // await emailQueue.initialize();
     // logger.info('Email queue initialized');
 
-    await notificationWorker.initialize();
+    // await notificationWorker.initialize();
     // logger.info('Notification worker initialized');
 
     // Start server
