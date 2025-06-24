@@ -36,7 +36,4 @@ const config = {
   API_PREFIX: process.env.API_PREFIX || '/api',
 };
 
-
-console.log(config)
-
 export { config };

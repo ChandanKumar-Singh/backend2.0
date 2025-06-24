@@ -3,7 +3,7 @@ import { config } from '../config/env.js';
 
 // Custom format for structured logging
 const customFormat = winston.format.combine(
-  winston.format.timestamp(),
+  // winston.format.timestamp(),
   winston.format.errors({ stack: true }),
   winston.format.json(),
   winston.format.printf(({ timestamp, level, message, ...meta }) => {
@@ -20,7 +20,7 @@ const customFormat = winston.format.combine(
 const logger = winston.createLogger({
   level: config.NODE_ENV === 'production' ? 'info' : 'debug',
   format: customFormat,
-  defaultMeta: { service: 'enterprise-backend' },
+  // defaultMeta: { service: 'enterprise-backend' },
   transports: [
     // Console transport
     new winston.transports.Console({

@@ -21,8 +21,8 @@ export const cache = (options = {}) => {
 
     try {
       // Generate cache key
-      const cacheKey = keyGenerator 
-        ? keyGenerator(req) 
+      const cacheKey = keyGenerator
+        ? keyGenerator(req)
         : generateDefaultCacheKey(req);
 
       // Check condition if provided
@@ -32,10 +32,11 @@ export const cache = (options = {}) => {
 
       // Try to get cached response
       const cachedResponse = await redisClient.get(cacheKey);
-      
+      console.log(`Cache key: ${cacheKey}`); // Debugging line to check cache key
+
       if (cachedResponse) {
         logger.debug('Cache hit', { key: cacheKey });
-        
+
         // Set cache headers
         res.set({
           'X-Cache': 'HIT',
@@ -51,7 +52,7 @@ export const cache = (options = {}) => {
       const originalJson = res.json;
 
       // Override res.json to cache the response
-      res.json = function(data) {
+      res.json = function (data) {
         // Cache the response
         redisClient.set(cacheKey, data, ttl)
           .catch(error => {
@@ -83,7 +84,7 @@ export const cache = (options = {}) => {
 const generateDefaultCacheKey = (req) => {
   const { method, originalUrl, user } = req;
   const userId = user ? user._id.toString() : 'anonymous';
-  
+
   // Include relevant query parameters in key
   const queryString = Object.keys(req.query)
     .sort()
@@ -99,7 +100,7 @@ const generateDefaultCacheKey = (req) => {
 export const invalidateCache = async (pattern) => {
   try {
     const keys = await redisClient.getClient().keys(`app:${pattern}`);
-    
+
     if (keys.length > 0) {
       // Remove the prefix from keys before deleting
       const keysWithoutPrefix = keys.map(key => key.replace('app:', ''));
@@ -178,7 +179,7 @@ export const getCacheStats = async () => {
   try {
     const info = await redisClient.getClient().info('memory');
     const keyspace = await redisClient.getClient().info('keyspace');
-    
+
     return {
       memory: info,
       keyspace: keyspace,

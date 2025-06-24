@@ -10,8 +10,8 @@ class Database {
   async connect() {
     try {
       const options = {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+        // useNewUrlParser: true, // Deprecated
+        // useUnifiedTopology: true, // Deprecated
         maxPoolSize: 10,
         serverSelectionTimeoutMS: 5000,
         socketTimeoutMS: 45000,

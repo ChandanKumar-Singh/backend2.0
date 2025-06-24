@@ -7,11 +7,19 @@ import { setupSecurity } from './middlewares/security.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.js';
 import apiRoutes from './routes/index.js';
 import logger from './core/logger.js';
+import { setupSwagger } from '../swagger.config.js';
 
 const app = express();
 
 // Trust proxy for proper IP detection
 app.set('trust proxy', 1);
+/// test ip and protocol
+/* app.use((req, res, next) => {
+  console.log('IP:', req.ip);
+  console.log('Protocol:', req.protocol);
+  next();
+}); */
+
 
 // Request logging
 app.use(morgan('combined', {
@@ -26,6 +34,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Security middleware
 setupSecurity(app);
+
+// Swagger setup — add BEFORE API routes
+setupSwagger(app);
 
 // API routes
 app.use('/api', apiRoutes);
